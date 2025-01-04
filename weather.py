@@ -1,6 +1,7 @@
 from typing import Any
 import httpx
 from mcp.server.fastmcp import FastMCP
+import asyncio
 
 # Initialize FastMCP server
 mcp = FastMCP("weather")
@@ -65,7 +66,7 @@ async def get_forecast(latitute: float, longtitude: float) -> str:
     points_data = await make_nws_request(points_url)
 
     if not points_data:
-        return "Unable to fetch forecast data for this location"
+        return "Unable to fetch points data for this location"
     
     # Get the forecast URL from the points response
     forecast_url = points_data.get("properties", {}).get("forecast")
@@ -74,7 +75,7 @@ async def get_forecast(latitute: float, longtitude: float) -> str:
 
     forecast_data = await make_nws_request(forecast_url)
     if not forecast_data:
-        return "Unable to fetch forecast data for this location"
+        return "Unable to get forecast data for this location"
     
     # Format the periods into a readable forecast
     periods = forecast_data.get("properties", {}).get("periods", [])
@@ -89,3 +90,22 @@ Forecast: {period['detailedForecast']}
         forecasts.append(forecast)
     
     return "\n--\n".join(forecasts)
+
+# async def main():
+#     # Run the server using stdin/stdout streams
+#     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+#         await server.run(
+#             read_stream,
+#             write_stream,
+#             InitializationOptions(
+#                 server_name="weather",
+#                 server_version="0.1.0",
+#                 capabilities=server.get_capabilities(
+#                     notification_options=NotificationOptions(),
+#                     experimental_capabilities={},
+#                 ),
+#             ),
+#         )
+
+if __name__ == "__main__":
+    asyncio.run(mcp.run())
