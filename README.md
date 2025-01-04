@@ -1,0 +1,1 @@
+quick start implementation of https://modelcontextprotocol.io/quickstart/server
